@@ -1,4 +1,4 @@
-import util
+from util import util
 
 R, C, L, H, pizza = util.parse("../input_data/example.in")
 
@@ -6,9 +6,9 @@ R, C, L, H, pizza = util.parse("../input_data/example.in")
 def possible_slice_frames_of_size(area):
     slices = list()
     slices.extend([{'r': 1, 'c': area}, {'r': area, 'c': 1}])
-    for i in range(2, area / 2):
+    for i in range(2, area // 2):
         if area % i == 0:
-            slices.extend([{'r': i, 'c': area / i}, {'r': area / i, 'c': i}])
+            slices.extend([{'r': i, 'c': area // i}, {'r': area // i, 'c': i}])
     return slices
 
 
