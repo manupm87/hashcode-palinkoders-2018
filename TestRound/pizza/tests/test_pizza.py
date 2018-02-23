@@ -44,4 +44,3 @@ def test_enough_ingredients_on_slice_mainly_tomato():
 def test_enough_ingredients_on_slice_mainly_mushroom():
     cur_slice = ['MM', 'TM']
     assert p.validate_ingredients_in_slice(cur_slice, 1)
-

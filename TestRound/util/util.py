@@ -1,10 +1,10 @@
 def parse(file_path):
     with open(file_path) as f:
-        R, C, L, H = map(int, f.readline().split())
+        r, c, l, h = map(int, f.readline().split())
         pizza = list()
-        for r in range(R):
+        for r in range(r):
             pizza.append(f.readline().strip())
 
     f.close()
 
-    return [R, C, L, H, pizza]
+    return [r, c, l, h, pizza]
