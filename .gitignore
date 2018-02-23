@@ -1,6 +1,9 @@
 # Mac
 .DS_Store
 
+# virtualenv
+python_env/
+
 # pytest
 .pytest*
 

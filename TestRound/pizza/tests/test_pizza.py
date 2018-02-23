@@ -1,8 +1,8 @@
-from pizza import pizza as p
+import pizza.pizzamodule as p
 from util import util
 
 
-R, C, L, H, pizza = util.parse("../input_data/example.in")
+R, C, L, H, pizza = util.parse("input_data/example.in")
 
 
 def test_possible_frames_of_size_6():
