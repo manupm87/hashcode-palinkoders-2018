@@ -13,8 +13,12 @@ H | Maximum total number of cells of a slice
 """
 
 file_name = "example"
+file_name = "custom_example"
 file_name = "small"
-# file_name = "medium"
+file_name = "random_input_20_20"
+file_name = "random_input_25_25"
+file_name = "random_input_30_30"
+#file_name = "medium"
 
 R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + file_name + ".in")
 
@@ -61,12 +65,22 @@ next_cell = p.get_cell_pos_with_minimum_health(health_map)
 while next_cell:
     best_slice = p.get_best_slice_for_cell_at_pos(next_cell, pizza, health_map, constraints)
     # print(best_slice)
+    if best_slice == -1:
+        # Recalculate health_map
+        health_map = p.compute_health_map(pizza, constraints, possible_frames=all_slice_frames)
+        next_cell = p.get_cell_pos_with_minimum_health(health_map)
+        continue
     slices.append(best_slice)
 
     p.cut_slice(best_slice, pizza, health_map)
-    # [print("\t".join(r)) for r in pizza]
-    # print()
-    # [print("\t".join(map(str, r))) for r in health_map]
+
+    #health_map = p.compute_health_map(pizza, constraints, possible_frames=all_slice_frames)
+
+    if R * C <= 1000:
+        print("\n------------------------------------\n")
+        [print("\t".join(r)) for r in pizza]
+        print()
+        [print("\t".join(map(str, r))) for r in health_map]
 
     next_cell = p.get_cell_pos_with_minimum_health(health_map)
 
@@ -88,8 +102,15 @@ Validate output
 """
 Calculate points
 """
+used_ingredients = sum([r.count('*') for r in pizza])
 
 
 """
 Calculate algorithm performance (TOTAL_POINTS / PIZZA SIZE)
 """
+
+max_ingredients = R * C
+
+ratio = 100 * used_ingredients / max_ingredients
+
+print("\n{}% of the pizza was delivered!".format(ratio))

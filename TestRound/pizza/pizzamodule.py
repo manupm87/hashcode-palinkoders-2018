@@ -150,7 +150,7 @@ def available_slices_for_cell(cell_pos, pizza, constraints, possible_frames=-1):
                                    'c1': frame_pos['c'] + frame_shape['c'] - 1}
                     valid_slices.append(valid_slice)
 
-    return valid_slices
+    return valid_slices[::-1]
 
 
 def compute_health_map(pizza, constraints, possible_frames=-1):
@@ -159,7 +159,10 @@ def compute_health_map(pizza, constraints, possible_frames=-1):
         health_row = list()
         for j, cell in enumerate(row):
             pos = {'r': i, 'c': j}
-            health_row.append(get_cell_health(pos, pizza, constraints, possible_frames))
+            if cell == '*':
+                health_row.append(-1)
+            else:
+                health_row.append(get_cell_health(pos, pizza, constraints, possible_frames))
         health_map.append(health_row)
     return health_map
 
@@ -211,11 +214,12 @@ def get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints):
 
 def get_slice_score(pizza_slice, pizza, health_map, constraints):
     neighbors_health = get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints)
+    size_score = 3 * (pizza_slice["r1"] - pizza_slice["r0"] + pizza_slice["c1"] - pizza_slice["c0"])
     if len(neighbors_health) == 0:
-        return sys.maxsize
+        return size_score
     else:
         min_health = min([h for h in neighbors_health if h >= 0])
-        score = min_health
+        score = min_health + size_score
         return score
 
 
