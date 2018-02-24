@@ -12,11 +12,11 @@ def possible_slice_frames_of_size(size, max_row, max_col):
                     slices.append(cur_slice)
             if cur_slice_invert not in slices:
                 if cur_slice_invert['r'] <= max_row and cur_slice_invert['c'] <= max_col:
-                    slices.append( cur_slice_invert)
+                    slices.append(cur_slice_invert)
     return slices
 
 
-def all_possible_slice_frames(max_size, min_ingredients, max_row, max_col):
+def all_usable_frames(max_size, min_ingredients, max_row, max_col):
     available_slices = dict()
     for size in range(2*min_ingredients, max_size + 1):
         available_slices[size] = possible_slice_frames_of_size(size=size, max_row=max_row, max_col=max_col)
@@ -74,8 +74,8 @@ def filter_invalid_slices(slice_shape, slices_positions, pizza, min_ingredients,
     return valid_slices
 
 
-def cell_health(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols):
-    return len(available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols))
+def cell_health(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames=-1):
+    return len(available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames))
 
 
 def frame_positions_containing_cell(cell_pos, slice_shape):
@@ -87,9 +87,12 @@ def frame_positions_containing_cell(cell_pos, slice_shape):
     return potential_frame_positions
 
 
-def available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols):
+def available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames=-1):
     valid_slices = list()
-    all_possible_frames = all_possible_slice_frames(max_size, min_ingredients, max_rows, max_cols)
+    if possible_frames == -1:
+        all_possible_frames = all_usable_frames(max_size, min_ingredients, max_rows, max_cols)
+    else:
+        all_possible_frames = possible_frames
     for size, frame_shapes in all_possible_frames.items():
         for frame_shape in frame_shapes:
             potential_frame_positions = frame_positions_containing_cell(cell_pos, frame_shape)
@@ -99,12 +102,12 @@ def available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_ro
     return valid_slices
 
 
-def compute_health_map(pizza, max_size, min_ingredients, max_rows, max_cols):
+def compute_health_map(pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames=-1):
     health_map = list()
     for i, row in enumerate(pizza):
         health_row = list()
         for j, cell in enumerate(row):
             pos = {'r': i, 'c': j}
-            health_row.append(cell_health(pos, pizza, max_size, min_ingredients, max_rows, max_cols))
+            health_row.append(cell_health(pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames))
         health_map.append(health_row)
     return health_map

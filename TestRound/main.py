@@ -1,6 +1,7 @@
 from definitions import *
 from util import util
 from pizza import pizzamodule as p
+import datetime
 
 
 """
@@ -10,7 +11,8 @@ L | Minimum number of each ingredient in a slice
 H | Maximum total number of cells of a slice
 """
 
-R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "example.in")
+R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "small.in")
+#R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "medium.in")
 
 print([R, C, L, H])
 
@@ -23,7 +25,7 @@ print()
 Get all the available slice_frames for the current set up (it depends on L & H) (to be on the safe side, 
 there should not be slice_frames with any dimension bigger than the pizza.
 """
-# all_slice_frames = p.all_possible_slice_frames(max_size=H, min_ingredients=L, max_row=R, max_col=C)
+all_slice_frames = p.all_usable_frames(max_size=H, min_ingredients=L, max_row=R, max_col=C)
 # print(all_slice_frames)
 
 
@@ -35,15 +37,25 @@ For each cell, calculate its 'health'
 # frame_positions = p.frame_positions_containing_cell(cell_pos={'r': 1, 'c': 1}, slice_shape=frame)
 # print(frame_positions)
 
-av_slices = p.available_slices_for_cell({'r': 0, 'c': 1}, pizza, H, L, R, C)
+# av_slices = p.available_slices_for_cell({'r': 0, 'c': 1}, pizza, H, L, R, C, possible_frames=all_slice_frames)
 print()
 # print(av_slices)
 # cell_health = p.cell_health({'r': 0, 'c': 0}, pizza, H, L, R, C)
 # print(cell_health)
 
-health_map = p.compute_health_map(pizza, H, L, R, C)
-[print(r) for r in health_map]
 
+a = datetime.datetime.now()
+health_map = p.compute_health_map(pizza, H, L, R, C)
+b = datetime.datetime.now()
+#[print(r) for r in health_map]
+print(b-a)
+
+
+a = datetime.datetime.now()
+health_map = p.compute_health_map(pizza, H, L, R, C, possible_frames=all_slice_frames)
+b = datetime.datetime.now()
+[print(r) for r in health_map]
+print(b-a)
 
 """
 # While there is any cell with health bigger than 0:
