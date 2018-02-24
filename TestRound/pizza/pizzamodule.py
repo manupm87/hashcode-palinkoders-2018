@@ -212,7 +212,7 @@ def get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints):
 def get_slice_score(pizza_slice, pizza, health_map, constraints):
     neighbors_health = get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints)
     if len(neighbors_health) == 0:
-        return 1
+        return sys.maxsize
     else:
         min_health = min([h for h in neighbors_health if h >= 0])
         score = min_health
