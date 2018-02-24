@@ -11,10 +11,13 @@ L | Minimum number of each ingredient in a slice
 H | Maximum total number of cells of a slice
 """
 
-R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "small.in")
-#R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "medium.in")
+R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "example.in")
+# R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "small.in")
+# R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "medium.in")
 
-print([R, C, L, H])
+constraints = {"R": R, "C": C, "L": L, "H": H}
+
+print(constraints)
 
 print()
 
@@ -25,8 +28,8 @@ print()
 Get all the available slice_frames for the current set up (it depends on L & H) (to be on the safe side, 
 there should not be slice_frames with any dimension bigger than the pizza.
 """
-all_slice_frames = p.all_usable_frames(max_size=H, min_ingredients=L, max_row=R, max_col=C)
-# print(all_slice_frames)
+all_slice_frames = p.get_all_fitting_frames(constraints)
+print(all_slice_frames)
 
 
 """
@@ -45,14 +48,14 @@ print()
 
 
 a = datetime.datetime.now()
-health_map = p.compute_health_map(pizza, H, L, R, C)
+health_map = p.compute_health_map(pizza, constraints)
 b = datetime.datetime.now()
 #[print(r) for r in health_map]
 print(b-a)
 
 
 a = datetime.datetime.now()
-health_map = p.compute_health_map(pizza, H, L, R, C, possible_frames=all_slice_frames)
+health_map = p.compute_health_map(pizza, constraints, possible_frames=all_slice_frames)
 b = datetime.datetime.now()
 [print(r) for r in health_map]
 print(b-a)

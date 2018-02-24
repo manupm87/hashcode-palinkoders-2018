@@ -1,38 +1,85 @@
 import math
 
 
-def possible_slice_frames_of_size(size, max_row, max_col):
-    slices = list()
-    for i in range(1, int(math.floor(math.sqrt(size)) + 1)):
-        if size % i == 0:
-            cur_slice = {'r': i, 'c': size // i}
-            cur_slice_invert = {'r': size // i, 'c': i}
-            if cur_slice not in slices:
-                if cur_slice['r'] <= max_row and cur_slice['c'] <= max_col:
-                    slices.append(cur_slice)
-            if cur_slice_invert not in slices:
-                if cur_slice_invert['r'] <= max_row and cur_slice_invert['c'] <= max_col:
-                    slices.append(cur_slice_invert)
-    return slices
+def get_fitting_frames_of_size(size, constraints):
+    """
+    Get all frames of size 'size' that fit on the pizza
+    :param size:
+    :param constraints:
+    :return:
+    """
+
+    def _get_fitting_frames_of_size(_size, _max_row, _max_col):
+        slices = list()
+        for i in range(1, int(math.floor(math.sqrt(_size)) + 1)):
+            if _size % i == 0:
+                cur_slice = {'r': i, 'c': _size // i}
+                cur_slice_invert = {'r': _size // i, 'c': i}
+                if cur_slice not in slices:
+                    if cur_slice['r'] <= _max_row and cur_slice['c'] <= _max_col:
+                        slices.append(cur_slice)
+                if cur_slice_invert not in slices:
+                    if cur_slice_invert['r'] <= _max_row and cur_slice_invert['c'] <= _max_col:
+                        slices.append(cur_slice_invert)
+        return slices
+    return _get_fitting_frames_of_size(size, constraints["R"], constraints["C"])
 
 
-def all_usable_frames(max_size, min_ingredients, max_row, max_col):
-    available_slices = dict()
-    for size in range(2*min_ingredients, max_size + 1):
-        available_slices[size] = possible_slice_frames_of_size(size=size, max_row=max_row, max_col=max_col)
-    return available_slices
+def get_all_fitting_frames(constraints):
+    """
+    Get all frames that fit on the pizza
+    :param constraints:
+    :return:
+    """
+    def _get_all_fitting_frames(_max_size, _min_ingredients, _max_row, _max_col):
+        available_slices = dict()
+        for size in range(2 * _min_ingredients, _max_size + 1):
+            available_slices[size] = get_fitting_frames_of_size(size=size, constraints=constraints)
+        return available_slices
+    return _get_all_fitting_frames(constraints["H"], constraints["L"], constraints["R"], constraints["C"])
 
 
-def slice_at_pos(pos, slice_frame, pizza, max_rows, max_cols):
-    if not validate_pos_for_frame(pos, slice_frame, max_rows, max_cols):
-        return False
-    cur_slice = list()
-    for r in range(slice_frame['r']):
-        cur_slice.append(pizza[pos['r'] + r][pos['c']:pos['c'] + slice_frame['c']])
-    return cur_slice
+def get_ingredients_for_slice_at_pos(pos, frame, pizza, constraints):
+    """
+    Get the slice of pizza with its ingredients
+    :param pos:
+    :param frame:
+    :param pizza:
+    :param constraints:
+    :return:
+    """
+    def _get_ingredients_for_slice_at_pos(_pos, _frame, _pizza, _max_rows, _max_cols):
+        if not is_valid_pos_for_frame(_pos, _frame, constraints):
+            return False
+        cur_slice = list()
+        for r in range(_frame['r']):
+            cur_slice.append(_pizza[_pos['r'] + r][_pos['c']:_pos['c'] + _frame['c']])
+        return cur_slice
+    return _get_ingredients_for_slice_at_pos(pos, frame, pizza, constraints["R"], constraints["C"])
 
 
-def validate_pos_for_frame(pos, frame, max_rows, max_cols):
+def is_valid_slice(frame, pos, pizza, constraints):
+    """
+    Validates whether the slice is valid in terms of position on the pizza, ingredient composition and overlaps.
+    :param frame:
+    :param pos:
+    :param pizza:
+    :param constraints:
+    :return: True if the slice is valid. False otherwise.
+    """
+    def _is_valid_slice(_frame, _pos, _pizza, _min_ingredients, _max_rows, _max_cols):
+        if not is_valid_pos_for_frame(_frame, _pos, constraints):
+            return False
+        slice_ingredients = get_ingredients_for_slice_at_pos(_pos, _frame, _pizza, constraints)
+        if not is_ingredients_valid(slice_ingredients, constraints):
+            return False
+        return True
+    return _is_valid_slice(frame, pos, pizza, constraints["L"], constraints["R"], constraints["C"])
+
+
+def is_valid_pos_for_frame(frame, pos, constraints):
+    max_rows = constraints["R"]
+    max_cols = constraints["C"]
     if pos['r'] + frame['r'] > max_rows or pos['r'] < 0:
         return False
     elif pos['c'] + frame['c'] > max_cols or pos['c'] < 0:
@@ -41,7 +88,8 @@ def validate_pos_for_frame(pos, frame, max_rows, max_cols):
         return True
 
 
-def validate_ingredients_in_slice(slice_ingredients, min_ingredients):
+def is_ingredients_valid(slice_ingredients, constraints):
+    min_ingredients = constraints["L"]
     count_tomatoes = sum([r.count('T') for r in slice_ingredients])
     count_mushrooms = sum([r.count('M') for r in slice_ingredients])
 
@@ -57,25 +105,8 @@ def slice_overlaps(slice_ingredients):
     return False
 
 
-def validate_slice(slice_shape, slice_pos, pizza, min_ingredients, max_rows, max_cols):
-    if not validate_pos_for_frame(slice_pos, slice_shape, max_rows, max_cols):
-        return False
-    slice_ingredients = slice_at_pos(slice_pos, slice_shape, pizza, max_rows, max_cols)
-    if not validate_ingredients_in_slice(slice_ingredients, min_ingredients):
-        return False
-    return True
-
-
-def filter_invalid_slices(slice_shape, slices_positions, pizza, min_ingredients, max_rows, max_cols):
-    valid_slices = list()
-    for slice_pos in slices_positions:
-        if validate_slice(slice_shape, slice_pos, pizza, min_ingredients, max_rows, max_cols):
-            valid_slices.append(slice_pos)
-    return valid_slices
-
-
-def cell_health(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames=-1):
-    return len(available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames))
+def cell_health(cell_pos, pizza, constraints, possible_frames=-1):
+    return len(available_slices_for_cell(cell_pos, pizza, constraints, possible_frames))
 
 
 def frame_positions_containing_cell(cell_pos, slice_shape):
@@ -87,27 +118,27 @@ def frame_positions_containing_cell(cell_pos, slice_shape):
     return potential_frame_positions
 
 
-def available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames=-1):
+def available_slices_for_cell(cell_pos, pizza, constraints, possible_frames=-1):
     valid_slices = list()
     if possible_frames == -1:
-        all_possible_frames = all_usable_frames(max_size, min_ingredients, max_rows, max_cols)
+        all_possible_frames = get_all_fitting_frames(constraints=constraints)
     else:
         all_possible_frames = possible_frames
     for size, frame_shapes in all_possible_frames.items():
         for frame_shape in frame_shapes:
             potential_frame_positions = frame_positions_containing_cell(cell_pos, frame_shape)
             for frame_pos in potential_frame_positions:
-                if validate_slice(frame_shape, frame_pos, pizza, min_ingredients, max_rows, max_cols):
+                if is_valid_slice(frame_shape, frame_pos, pizza, constraints=constraints):
                     valid_slices.append({"pos": frame_pos, "shape": frame_shape})
     return valid_slices
 
 
-def compute_health_map(pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames=-1):
+def compute_health_map(pizza, constraints, possible_frames=-1):
     health_map = list()
     for i, row in enumerate(pizza):
         health_row = list()
         for j, cell in enumerate(row):
             pos = {'r': i, 'c': j}
-            health_row.append(cell_health(pos, pizza, max_size, min_ingredients, max_rows, max_cols, possible_frames))
+            health_row.append(cell_health(pos, pizza, constraints, possible_frames))
         health_map.append(health_row)
     return health_map
