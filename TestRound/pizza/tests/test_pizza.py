@@ -7,9 +7,16 @@ R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "example.in")
 
 
 def test_possible_frames_of_size_6():
-    sol = p.possible_slice_frames_of_size(size=6)
+    sol = p.possible_slice_frames_of_size(size=6, max_row=6, max_col=6)
     assert len(sol) is 4
     assert sol.__contains__({'r': 1, 'c': 6})
+
+
+def test_possible_frames_of_size_4():
+    sol = p.possible_slice_frames_of_size(size=4, max_row=4, max_col=4)
+    assert len(sol) is 3
+    assert sol.__contains__({'r': 2, 'c': 2})
+    assert sol.__contains__({'r': 4, 'c': 1})
 
 
 def test_first_slice_of_size_6():
@@ -45,3 +52,8 @@ def test_enough_ingredients_on_slice_mainly_tomato():
 def test_enough_ingredients_on_slice_mainly_mushroom():
     cur_slice = ['MM', 'TM']
     assert p.validate_ingredients_in_slice(cur_slice, 1)
+
+
+def test_slice_with_enough_ingredients_but_overlapping():
+    cur_slice = ['MTT', '*MT', '*MT']
+    assert not p.validate_ingredients_in_slice(slice_ingredients=cur_slice, min_ingredients=2)
