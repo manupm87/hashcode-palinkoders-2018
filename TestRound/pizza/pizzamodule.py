@@ -97,3 +97,14 @@ def available_slices_for_cell(cell_pos, pizza, max_size, min_ingredients, max_ro
                 if validate_slice(frame_shape, frame_pos, pizza, min_ingredients, max_rows, max_cols):
                     valid_slices.append({"pos": frame_pos, "shape": frame_shape})
     return valid_slices
+
+
+def compute_health_map(pizza, max_size, min_ingredients, max_rows, max_cols):
+    health_map = list()
+    for i, row in enumerate(pizza):
+        health_row = list()
+        for j, cell in enumerate(row):
+            pos = {'r': i, 'c': j}
+            health_row.append(cell_health(pos, pizza, max_size, min_ingredients, max_rows, max_cols))
+        health_map.append(health_row)
+    return health_map
