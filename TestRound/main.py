@@ -2,6 +2,7 @@ from definitions import *
 from util import util
 from pizza import pizzamodule as p
 import datetime
+import json
 
 
 """
@@ -12,16 +13,16 @@ H | Maximum total number of cells of a slice
 """
 
 R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "example.in")
-# R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "small.in")
+#R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "small.in")
 # R, C, L, H, pizza = util.parse(INPUT_DATA_DIR + "medium.in")
 
 constraints = {"R": R, "C": C, "L": L, "H": H}
-
+pizza = [list(row) for row in pizza]
 print(constraints)
 
 print()
 
-[print(r) for r in pizza]
+[print("\t".join(r)) for r in pizza]
 
 
 """
@@ -40,11 +41,11 @@ For each cell, calculate its 'health'
 # frame_positions = p.frame_positions_containing_cell(cell_pos={'r': 1, 'c': 1}, slice_shape=frame)
 # print(frame_positions)
 
-# av_slices = p.available_slices_for_cell({'r': 0, 'c': 1}, pizza, H, L, R, C, possible_frames=all_slice_frames)
+av_slices = p.available_slices_for_cell({'r': 0, 'c': 1}, pizza, constraints, possible_frames=all_slice_frames)
 print()
-# print(av_slices)
-# cell_health = p.cell_health({'r': 0, 'c': 0}, pizza, H, L, R, C)
-# print(cell_health)
+print(json.dumps(av_slices, indent=4))
+# get_cell_health = p.get_cell_health({'r': 0, 'c': 0}, pizza, H, L, R, C)
+# print(get_cell_health)
 
 
 a = datetime.datetime.now()
@@ -57,8 +58,30 @@ print(b-a)
 a = datetime.datetime.now()
 health_map = p.compute_health_map(pizza, constraints, possible_frames=all_slice_frames)
 b = datetime.datetime.now()
-[print(r) for r in health_map]
+[print("\t".join(map(str, r))) for r in health_map]
 print(b-a)
+
+next_cell = p.get_cell_pos_with_minimum_health(health_map)
+print(next_cell)
+
+pizza_slice = {'r0': 0, 'c0': 2,
+               'r1': 2, 'c1': 4}
+
+slice_neighbors = p.get_neighbor_cells_for_slice(pizza_slice, pizza, constraints)
+print(slice_neighbors)
+
+neighbors_health = p.get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints)
+print(neighbors_health)
+
+print("Compute best slice for (0,0)")
+cell = {'r': 0, 'c': 0}
+best_slice = p.get_best_slice_for_cell_at_pos(cell, pizza, health_map, constraints)
+print(best_slice)
+
+p.cut_slice(best_slice, pizza, health_map)
+[print("\t".join(r)) for r in pizza]
+print()
+[print("\t".join(map(str, r))) for r in health_map]
 
 """
 # While there is any cell with health bigger than 0:
