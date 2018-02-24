@@ -20,17 +20,17 @@ def test_possible_frames_of_size_4():
 
 
 def test_first_slice_of_size_6():
-    cut_slice = p.slice_at_pos(pos={"r": 0, "c": 0}, slice_frame={'c': 2, 'r': 3}, pizza=pizza)
+    cut_slice = p.slice_at_pos(pos={"r": 0, "c": 0}, slice_frame={'c': 2, 'r': 3}, pizza=pizza, max_rows=R, max_cols=C)
     assert cut_slice.__eq__(['TT', 'TM', 'TT'])
 
 
 def test_last_slice_of_size_6():
-    cut_slice = p.slice_at_pos(pos={"r": 0, "c": 3}, slice_frame={'c': 2, 'r': 3}, pizza=pizza)
+    cut_slice = p.slice_at_pos(pos={"r": 0, "c": 3}, slice_frame={'c': 2, 'r': 3}, pizza=pizza, max_rows=R, max_cols=C)
     assert cut_slice.__eq__(['TT', 'MT', 'TT'])
 
 
 def test_slice_of_size_6_out_of_pizza_bounds():
-    cut_slice = p.slice_at_pos(pos={"r": 0, "c": 4}, slice_frame={'c': 2, 'r': 3}, pizza=pizza)
+    cut_slice = p.slice_at_pos(pos={"r": 0, "c": 4}, slice_frame={'c': 2, 'r': 3}, pizza=pizza, max_rows=R, max_cols=C)
     assert not cut_slice
 
 
