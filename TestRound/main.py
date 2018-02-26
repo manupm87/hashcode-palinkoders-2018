@@ -19,7 +19,9 @@ file_name = "small"
 file_name = "random_input_20_20"
 file_name = "random_input_25_25"
 file_name = "random_input_30_30"
-file_name = "medium"
+file_name = "random_input_50_50_4_12"
+# file_name = "random_input_40_80_5_15"
+# file_name = "medium"
 # file_name = "big"
 
 
@@ -137,7 +139,7 @@ for i, sub_pizza in enumerate(sub_pizzas):
 
     pizza = p.update_pizza(pizza, sub_pizza, sub_pizza_ingredients)
     print("Progress: {}% - {} / {} sub_pizzas processed.".format(100 * (i + 1) / len(sub_pizzas), i + 1, len(sub_pizzas)))
-    if R * C <= 1000:
+    if R * C <= 3500:
         print("\n------------------------------------\n")
         [print("\t".join(r)) for r in pizza]
 

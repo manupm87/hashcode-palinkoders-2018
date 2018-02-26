@@ -252,10 +252,10 @@ def get_sub_pizzas(constraints):
     min_height = min(R, MIN_PIZZA_HEIGHT)
     min_width = min(C, MIN_PIZZA_WIDTH)
 
-    sub_pizza_R = min(max(min_height, math.floor(2.0 * H)), MAX_PIZZA_HEIGHT)
-    sub_pizza_C = min(max(min_width, math.floor(2.0 * H)), MAX_PIZZA_WIDTH)
-    overlap_R = math.floor(0.15 * sub_pizza_R)
-    overlap_C = math.floor(0.15 * sub_pizza_C)
+    sub_pizza_R = min(max(min_height, math.floor(2.5 * H)), MAX_PIZZA_HEIGHT)
+    sub_pizza_C = min(max(min_width, math.floor(2.5 * H)), MAX_PIZZA_WIDTH)
+    overlap_R = math.floor(0.25 * H)
+    overlap_C = math.floor(0.25 * H)
 
     sub_pizzas = list()
 
