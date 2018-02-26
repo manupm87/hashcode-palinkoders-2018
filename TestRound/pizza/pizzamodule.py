@@ -1,5 +1,6 @@
 import math
 import sys
+from definitions import *
 
 
 def get_fitting_frames_of_size(size, constraints):
@@ -213,10 +214,11 @@ def get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints):
 
 
 def get_slice_score(pizza_slice, pizza, health_map, constraints):
+    # TODO: Compute the score based on the future health of neighbors if current slice is selected
     neighbors_health = get_neighbor_cells_health(pizza_slice, pizza, health_map, constraints)
     size_score = 3 * (pizza_slice["r1"] - pizza_slice["r0"] + pizza_slice["c1"] - pizza_slice["c0"])
     if len(neighbors_health) == 0:
-        return size_score
+        return sys.maxsize
     else:
         min_health = min([h for h in neighbors_health if h >= 0])
         score = min_health + size_score
@@ -238,4 +240,54 @@ def cut_slice(pizza_slice, pizza, health_map):
         for c in range(pizza_slice["c0"], pizza_slice["c1"] + 1):
             pizza[r][c] = "*"
             health_map[r][c] = -1
+    return pizza
+
+
+def get_sub_pizzas(constraints):
+
+    R = constraints["R"]
+    C = constraints["C"]
+    H = constraints["H"]
+
+    min_height = min(R, MIN_PIZZA_HEIGHT)
+    min_width = min(C, MIN_PIZZA_WIDTH)
+
+    sub_pizza_R = min(max(min_height, math.floor(2.0 * H)), MAX_PIZZA_HEIGHT)
+    sub_pizza_C = min(max(min_width, math.floor(2.0 * H)), MAX_PIZZA_WIDTH)
+    overlap_R = math.floor(0.15 * sub_pizza_R)
+    overlap_C = math.floor(0.15 * sub_pizza_C)
+
+    sub_pizzas = list()
+
+    cur_r = 0
+    r1 = 0
+
+    while r1 < R - 1:
+        cur_c = 0
+        c0, c1 = [0, 0]
+        r0 = cur_r * (sub_pizza_R - overlap_R)
+        r1 = r0 + sub_pizza_R - 1 if r0 + 2 * (sub_pizza_R - overlap_R) < R else R - 1
+        while c1 < C - 1:
+            c0 = cur_c * (sub_pizza_C - overlap_C)
+            c1 = c0 + sub_pizza_C - 1 if c0 + 2 * (sub_pizza_C - overlap_C) < C else C - 1
+            cur_c += 1
+            sub_pizzas.append({"r0": r0, "c0": c0, "r1": r1, "c1": c1})
+        cur_r += 1
+    return sub_pizzas
+
+
+def get_sub_pizza_ingredients(pizza, sub_pizza):
+    new_pizza = list()
+    for r in range(sub_pizza["r0"], sub_pizza["r1"] + 1):
+        new_pizza_row = list()
+        for c in range(sub_pizza["c0"], sub_pizza["c1"] + 1):
+            new_pizza_row.append(pizza[r][c])
+        new_pizza.append(new_pizza_row)
+    return new_pizza
+
+
+def update_pizza(pizza, sub_pizza, sub_pizza_ingredients):
+    for r, row in enumerate(sub_pizza_ingredients):
+        for c, ingredient in enumerate(row):
+            pizza[sub_pizza["r0"] + r][sub_pizza["c0"] + c] = ingredient
     return pizza
