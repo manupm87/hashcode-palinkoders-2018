@@ -22,7 +22,7 @@ file_name = "random_input_30_30"
 file_name = "random_input_50_50_4_12"
 file_name = "random_input_40_80_5_15"
 file_name = "medium"
-file_name = "big"
+# file_name = "big"
 
 
 def solve(_pizza, _constraints, _all_slice_frames):
@@ -113,6 +113,7 @@ print(constraints)
 
 print()
 
+SUBSLICE = True
 
 """
 Get all the available slice_frames for the current set up (it depends on L & H) (to be on the safe side, 
@@ -121,13 +122,16 @@ there should not be slice_frames with any dimension bigger than the pizza.
 all_slice_frames = p.get_all_fitting_frames(constraints)
 # print(all_slice_frames)
 
-
-"""
-Divide pizza into sub problems with overlap
-"""
-sub_pizzas = p.get_sub_pizzas(constraints)
-
 all_pizza_slices = list()
+sub_pizzas = list()
+if SUBSLICE:
+    """
+    Divide pizza into sub problems with overlap
+    """
+    sub_pizzas = p.get_sub_pizzas(constraints)
+else:
+    sub_pizzas.append({"r0": 0, "c0": 0,
+                        "r1": constraints["R"] - 1, "c1": constraints["C"] - 1})
 
 for i, sub_pizza in enumerate(sub_pizzas):
     sub_pizza_ingredients = p.get_sub_pizza_ingredients(pizza, sub_pizza)
@@ -135,7 +139,13 @@ for i, sub_pizza in enumerate(sub_pizzas):
     sub_C = len(sub_pizza_ingredients[0])
     sub_constraints = {"R": sub_R, "C": sub_C, "L": L, "H": H}
     pizza_slices = solve(sub_pizza_ingredients, sub_constraints, all_slice_frames)
-    all_pizza_slices.extend(pizza_slices)
+    # Extend solution taking into account the offside
+    for pizza_slice in pizza_slices:
+        cur_pizza_slice = {"r0": pizza_slice["r0"] + sub_pizza["r0"],
+                           "c0": pizza_slice["c0"] + sub_pizza["c0"],
+                           "r1": pizza_slice["r1"] + sub_pizza["r0"],
+                           "c1": pizza_slice["c1"] + sub_pizza["c0"]}
+        all_pizza_slices.append(cur_pizza_slice)
 
     pizza = p.update_pizza(pizza, sub_pizza, sub_pizza_ingredients)
     print("Progress: {}% - {} / {} sub_pizzas processed.".format(100 * (i + 1) / len(sub_pizzas), i + 1, len(sub_pizzas)))
