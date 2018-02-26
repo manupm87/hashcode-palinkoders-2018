@@ -10,3 +10,10 @@ init:
        source python_env/bin/activate; \
        pip3 install -r requirements.txt; \
     )
+
+profile:
+	( \
+		source python_env/bin/activate; \
+		python -m cProfile -o "profile/profile.prof" main.py; \
+		snakeviz profile/profile.prof;\
+    )

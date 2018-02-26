@@ -20,9 +20,9 @@ file_name = "random_input_20_20"
 file_name = "random_input_25_25"
 file_name = "random_input_30_30"
 file_name = "random_input_50_50_4_12"
-# file_name = "random_input_40_80_5_15"
-# file_name = "medium"
-# file_name = "big"
+file_name = "random_input_40_80_5_15"
+file_name = "medium"
+file_name = "big"
 
 
 def solve(_pizza, _constraints, _all_slice_frames):
