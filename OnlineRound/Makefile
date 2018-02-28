@@ -1,7 +1,7 @@
 .PHONY: run test init profile zip publish
 
 run:
-	python main.py
+	python_env/bin/python main.py
 
 test:
 	pytest
