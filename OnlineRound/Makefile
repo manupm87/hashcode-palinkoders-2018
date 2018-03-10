@@ -1,7 +1,7 @@
 .PHONY: run test init profile zip publish
 
 run:
-	python main.py
+	python_env/bin/python main.py
 
 test:
 	pytest
@@ -22,14 +22,14 @@ profile:
     )
 
 zip:
-	rm -f test-round-palinkoders.zip;
-	zip -r test-round-palinkoders.zip ../TestRound -x "*python_env*" -x "*__pycache*" -x "*.idea*" -x "*.pytest_cache*"
+	rm -f online-round-palinkoders.zip;
+	zip -r online-round-palinkoders.zip ../OnlineRound -x "*python_env*" -x "*__pycache*" -x "*.idea*" -x "*.pytest_cache*"
 
 publish:
 	mkdir -p dist;
 	rm -rf dist/*;
 	cp -f output/{example,small,medium,big}.out dist/ || :;
 	make zip;
-	cp test-round-palinkoders.zip dist/;
+	cp online-round-palinkoders.zip dist/;
 
 build: test run publish
